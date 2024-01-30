@@ -32,10 +32,11 @@ class ChatService {
 
     //вводим функцию для добавления чата с собеседником по его idInterlocutor
     fun addChat(idInterlocutor: Int, message: Message): MutableList<Chat> {
-        //добавляем сообщение в список всех сообщений
-        messagesAll += message.copy(id = ++countMessage)
         //увеличиваем счетчик чатов на 1
         countChat += 1
+        //добавляем сообщение в список всех сообщений
+        messagesAll += message.copy(idChat = countChat, id = ++countMessage)
+
         chats += Chat(
             id = countChat,
             idInterlocutor = idInterlocutor,
@@ -50,9 +51,9 @@ class ChatService {
     fun addMessage(idChat: Int, message: Message): Int {
         for ((index, item) in chats.withIndex()) {
             if (item.id == idChat) {
-                item.messages += message.copy(id = ++countMessage) //добавляем копию сообщения в чат с присвоением id
-                ++countMessage //обновляем счетчик сообщений
-                return message.id
+                countMessage += 1 //обновляем счетчик сообщений
+                item.messages += message.copy(id = countMessage) //добавляем копию сообщения в чат с присвоением id
+                return countMessage
             }
         }
         throw ChatIdNotFoundException("Чата с таким id не существует")
@@ -68,6 +69,7 @@ class ChatService {
             for ((index, value) in item.messages.withIndex()) {
                 if (!value.read) {
                     mes += item.copy()
+                    return mes
                 }
             }
         }
@@ -76,12 +78,12 @@ class ChatService {
     }
 
     //введем функцию для получения списка чатов
-    fun getChats(chats: MutableList<Chat>): String {
+    fun getChats(): String {
         return chats.joinToString()
     }
 
     //вводим функцию для получения последних сообщений из чата в ввиде строк
-    fun lastMessageInAllChats(chats: MutableList<Chat>, idChat: Int): Message {
+    fun getLastMessageInChat(chats: MutableList<Chat>, idChat: Int): Message {
         //перебираем все чаты циклом
         for ((index, item) in chats.withIndex()) {
             //если id чата совпадает с нужным
@@ -110,7 +112,7 @@ class ChatService {
         for ((index, item) in chats.withIndex()) {
             if (item.id == idChat) {
                 for ((count, value) in item.messages) {
-                    item.messages.removeAt(count)
+                    item.messages.removeAt(count-1)
                     return true
                 }
             }
@@ -123,6 +125,7 @@ class ChatService {
         for ((index, item) in chats.withIndex()) {
             if (item.id == idChat) {
                 chats.removeAt(index)
+                return true
             }
         }
         throw ChatIdNotFoundException("Чата с таким id не существует")
