@@ -123,7 +123,7 @@ class ChatServiceTest {
 
         val result = service.getMessageInChat(1, 2)
 
-        assertEquals(Message(id = 1, idChat = 1, text = "Hello"), result.joinToString())
+        assertEquals(messagesAll.joinToString(), result.joinToString())
     }
 
     @Test
