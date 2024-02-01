@@ -59,10 +59,18 @@ class ChatService {
         throw ChatIdNotFoundException("Чата с таким id не существует")
     }
 
+    fun hasRead(chat: Chat): Boolean {
+        for (item in chats) {
+            for ((index, value) in item.messages.withIndex()) {
+                return value.read
+            }
+        }
+        throw ChatIdNotFoundException("Чата с таким id не найдено!")
+    }
+
 
     //введем функцию, которая будет возвращать чаты с непрочитанными сообщениями используя anonymous function
     fun getUnreadChatsCount(): MutableList<Chat> {
-        //создаем пустой список для хранения чатов с непрочитанными сообщениями
         val mes: MutableList<Chat> = mutableListOf()
 
         for (item in chats) {
@@ -84,14 +92,17 @@ class ChatService {
 
     //вводим функцию для получения последних сообщений из чата в ввиде строк
     fun getLastMessageInChat(chats: MutableList<Chat>, idChat: Int): Message {
+        //используем функцию filter
+        return messagesAll.filter { it.idChat == idChat }.last()
+
         //перебираем все чаты циклом
-        for ((index, item) in chats.withIndex()) {
+        /*for ((index, item) in chats.withIndex()) {
             //если id чата совпадает с нужным
             if (item.id == idChat) {
                 //возвращаем последнее сообщение из списка всех чатов с фильтрацией по idChat, к которому принадлежит сообщение
                 return item.messages.last { it.idChat == idChat }
             }
-        }
+        }*/
         return Message(text = "Сообщений еще нет или они были удалены")
     }
 
