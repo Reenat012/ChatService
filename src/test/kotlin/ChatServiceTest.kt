@@ -3,172 +3,92 @@ import org.junit.Test
 import junit.framework.TestCase.*
 
 class ChatServiceTest {
-
-    @Test
-    fun addChat() {
-        val service = ChatService()
-
-        val result = service.addChat(1, Message(text = "Hello"))
-
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
-
-        assertEquals(list, result)
-    }
-
     @Test
     fun addMessage() {
         val service = ChatService()
 
-        service.addChat(1, Message(text = "Hello"))
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
+        val result = service.addMessage(1, Message(text = "Hello"))
 
-        val result = service.addMessage(idChat = 1, Message(text = "World"))
-
-        assertEquals(2, result)
+        assertEquals(chats, result)
     }
 
     @Test
     fun getUnreadChatsCount() {
         val service = ChatService()
 
-        service.addChat(1, Message(text = "Hello"))
-
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
         val result = service.getUnreadChatsCount()
 
-        assertEquals(list, result)
+        assertEquals(1, result)
     }
 
     @Test
     fun getChats() {
         val service = ChatService()
 
-        service.addChat(1, Message(text = "Hello"))
-
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
         val result = service.getChats()
 
-        assertEquals(list.joinToString(), result)
+        assertEquals(chats, result)
     }
 
     @Test
-    fun lastMessageInChat() {
+    fun lastMessageInChats() {
         val service = ChatService()
 
-        val chats: MutableList<Chat> = mutableListOf()
-        chats += service.addChat(1, Message(text = "Hello"))
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
 
-        val result = service.getLastMessageInChat(chats, idChat = 1)
+        val result = service.getLastMessageInChats()
 
-        assertEquals(Message(id = 1, idChat = 1, text = "Hello"), result)
+        assertEquals(chats.values.map { it.messages.lastOrNull()?.text }, result)
     }
 
     @Test
     fun getMessageInChat() {
         val service = ChatService()
 
-        val chats: MutableList<Chat> = mutableListOf()
-        chats += service.addChat(1, Message(text = "Hello"))
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
 
-        val result = service.getMessageInChat(1, 2)
+        val result = service.getMessageInChat(1, 1)
 
-        assertEquals(messagesAll.joinToString(), result.joinToString())
+        assertEquals(chats[1]?.messages?.takeLast(1), result)
     }
 
     @Test
     fun deleteMessage() {
         val service = ChatService()
 
-        val chats: MutableList<Chat> = mutableListOf()
-        chats += service.addChat(1, Message(text = "Hello"))
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
+        val result = service.deleteMessage(1, 0)
 
-        val result = service.deleteMessage(1, 1)
-
-        assertEquals(true, result)
+        assertEquals(Message(text = "Hello"), result)
     }
 
     @Test
     fun deleteChat() {
         val service = ChatService()
 
-        val chats: MutableList<Chat> = mutableListOf()
-        chats += service.addChat(1, Message(text = "Hello"))
-
-        val messagesAll: MutableList<Message> = mutableListOf()
-        messagesAll += Message(id = 1, idChat = 1, text = "Hello")
-        val list = mutableListOf(
-            Chat(
-                id = 1,
-                idInterlocutor = 1,
-                countMessage = 2,
-                messages = messagesAll.filter { it.idChat == 1 }.toMutableList()
-            )
-        )
+        val chats: MutableMap<Int, Chat> = mutableMapOf()
+        chats += service.addMessage(1, Message(text = "Hello"))
 
         val result = service.deleteChat(1)
 
-        assertEquals(true, result)
+        val ch: MutableMap<Int, Chat> = mutableMapOf()
+        ch += service.addMessage(1, Message(text = "Hello"))
+
+        assertEquals(ch[1], result)
     }
 }
