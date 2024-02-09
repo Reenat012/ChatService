@@ -47,7 +47,8 @@ class ChatService {
         //count - возвращает количество элементов, которое удовлевтворяет придакату {..}
         //чат считается непрочитанным, если есть хотя бы одно непрочитанное сообщение
         //any - вовзвращает true, если хотя бы один элемент удовлетворяет предикате
-        return chats.values.count { chat -> chat.messages.any { !it.read } }
+        return chats.values
+            .count { chat -> chat.messages.any { !it.read } }
     }
 
     //введем функцию для получения списка чатов
@@ -62,7 +63,10 @@ class ChatService {
         //т.е. собирает коллекцию из последних сообщений всех чатов
         //lastOrNull - возвращает последний элемент в списке, а если его нет возвращает null
         //в нашем случае с помощью оператора элвиса ?: возвращаем сообщения "No messages"
-        return chats.values.map { it.messages.lastOrNull()?.text ?: "No messages" }
+        return chats.values
+            .asSequence()
+            .map { it.messages.lastOrNull()?.text ?: "No messages" }
+            .toList()
     }
 
 
@@ -72,7 +76,13 @@ class ChatService {
         //takeLast (функция расширения) - возвращает список, который содержит последнии n элементов (в нашем случае количество последних сообщений)
         //oneEach (функция расширения) - выполняет лямбду на каждом элементе и возвращает коллекцию
         //onEach { it.read = true } - автоматически читает выведенные сообщения
-        return chat.messages.takeLast(countMessage).onEach { it.read = true }
+        return chat.messages
+            .asSequence()
+            .take(countMessage)
+            .ifEmpty { throw MessageIdNotFoundException("Messages not") }
+            .onEach { it.read = true }
+            .toList()
+
     }
 
     //вводим функцию для удаления сообщения по id
